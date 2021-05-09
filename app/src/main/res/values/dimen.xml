@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="menu_textSize">24sp</dimen>
+    <dimen name="main_sentence_textSize">24sp</dimen>
+    <dimen name="sub_sentence_textSize">18sp</dimen>
+    <dimen name="btn_textSize">18sp</dimen>
+    <dimen name="info_textSize">18sp</dimen>
+    
+    <dimen name="margin_1">8dp</dimen>
+    <dimen name="margin_2">16dp</dimen>
+
+</resources>

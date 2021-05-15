@@ -1,18 +1,27 @@
-package com.naze.tpying_practice;
+ package com.naze.tpying_practice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +31,8 @@ public class LongPracticeActivity extends AppCompatActivity {
     private static final int MESSAGE_TIMER_START = 1000;
     private static final int MESSAGE_TIMER_PAUSE = 1001;
     private static final int MESSAGE_TIMER_STOP = 1002;
+
+    private long BACK_PRESS_TIME = 0;
 
     private static boolean GAME_START = false;
 
@@ -44,6 +55,13 @@ public class LongPracticeActivity extends AppCompatActivity {
     static int txt_cnt = 0; //타수
     static int time = 0; //시간
 
+    String savedWord =""; //글자
+    int savedByte = 0; //바이트
+    int nextS = 0;
+
+    String[] array_substring; //문장 나누기 (계산횟수 최소화하기 위해서)
+    int[] array_check; //문장 오타 검사
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +73,7 @@ public class LongPracticeActivity extends AppCompatActivity {
         tv_txt = (TextView)findViewById(R.id.tv_txt);
         tv_time = (TextView)findViewById(R.id.tv_time);
         tv_process = (TextView)findViewById(R.id.tv_process);
-        tv_error = (TextView)findViewById(R.id.tv_error);   
+        tv_error = (TextView)findViewById(R.id.tv_error);
 
         tv_txt_cnt = (TextView)findViewById(R.id.tv_txt_cnt);
         tv_time_cnt = (TextView)findViewById(R.id.tv_time_cnt);
@@ -81,16 +99,22 @@ public class LongPracticeActivity extends AppCompatActivity {
                     timerHandler.removeMessages(MESSAGE_TIMER_START);
                     timer = false;
                     btn_start.setText("시작하기");
+                    active_set(false);
                     //Log.d("Time set",timerHandler.time+""); 시간 불러오기
                 }
                 else { //일시정지 상태 -> 타이머 (재)시작
                     timerHandler.sendEmptyMessage(MESSAGE_TIMER_START);
                     timer = true;
                     btn_start.setText("일시정지");
+                    active_set(true);
+
                     if(!GAME_START){
                         game_reset();
                         sentence_view(sen_num); //게임의 시작
+                        et_sentence.setFilters(new InputFilter[] { new InputFilter.LengthFilter(text[sen_num].length())}); //글자 최대 수 제한
+                        tv_process_cnt.setText("1/"+text.length);
                         GAME_START = true;
+
                     }
 
                 }
@@ -105,12 +129,54 @@ public class LongPracticeActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("TextWatcher",s+"/"+start+"/"+before+"/"+count);
+
+                if(before <= count ) {
+                    savedWord = s.toString().substring(start,start+1);
+                    sentence_check(start);
+                    if(before < count) {
+                        savedByte = savedWord.getBytes().length;
+                        txt_cnt += savedByte; //타수에 byte 추가
+                    }
+                }
+                else if(before > count) {
+                    sentence_check(start);
+                    txt_cnt -= savedByte; //타수에 byte 감소
+                    if (nextS == 0) {
+                        nextS = 1;
+                    } else if (nextS == 1) {
+                        savedByte = s.toString().substring(start - 1, start).getBytes().length;
+                    }
+                    //문제 발생 글자마다 byte 달라서 여러번 줄일 때 오류 발생
+
+                }
+
+                Log.d("TextWatcher","타수: "+txt_cnt+"/"+savedWord);
 
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
+            }
+        });
+
+/*        et_sentence.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_ENTER:
+                        nextSentence();
+                        break;
+                }
+                return true;
+            }
+        });*/
+
+        btn_enter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextSentence();
             }
         });
 
@@ -123,12 +189,10 @@ public class LongPracticeActivity extends AppCompatActivity {
             switch (msg.what) {
                 case MESSAGE_TIMER_START:
                     time += 1; //1초 추가
-                    Log.d("TimerHandler","Timer Start : " + time);
+                    //Log.d("TimerHandler","Timer Start : " + time);
                     this.sendEmptyMessageDelayed(MESSAGE_TIMER_START, 1000);
-                    tv_time_cnt.setText(String.format("%02d",time/60)+":"+String.format("%02d",time%60));
-
-                    tv_txt_cnt.setText(String.format("%d",txt_cnt/time));
-                    Log.d("TimerHandler","타수  : "+txt_cnt+" / 시간 : "+time);
+                    time_set();
+                    //Log.d("TimerHandler","타수  : "+txt_cnt+" / 시간 : "+time);
                     break;
             }
         }
@@ -201,24 +265,45 @@ public class LongPracticeActivity extends AppCompatActivity {
 
     }
 
-    private void sentence_separation(int num_sentence){ //문장 번호를 받음
-        String str = text[num_sentence];
-        String[] array_split = str.split(" ");
-        String[] array_substring;
+    private void sentence_separation(int num_sentence){ //문장 분리
 
-        for(int i = 0 ; i < array_split.length ; i++){
-            Log.d("sentence_separation","split : "+array_split[i]);
-            String str2 = array_split[i];
+        String str = text[num_sentence]; //문장 번호 받아오기
+        array_substring = new String[str.length()];
+        array_check = new int[str.length()]; //오타 검사용
 
+        for(int i = 0 ; i < str.length() ; i++) {
+            array_substring[i] = str.substring(i,i+1);
+//            Log.d("sentence_separation","substring : "+array_substring[i]);
         }
-/*        String str2 = array_split[0];
-        int cnt = 0;
-        for(int i = 0 ; i < str2.length() ; i++){
-            String str3 = str2.substring(i,i+1);
-            Log.d("sentence_separation","substring : "+str3+" : "+str2.length());
-        }*/
 
     }
+
+    private void sentence_check(int num){ //오타검사
+        String content = tv_main_sentence.getText().toString();
+
+        SpannableString spannableString = new SpannableString(content);
+
+        if(array_substring[num].equals(savedWord)) {
+            Log.d("sentence_check","오타가 없음!"+array_substring[num]+"/"+savedWord);
+            array_check[num] = 0; //오타 없음 = 0
+        }
+        else {
+            Log.d("sentence_check","오타가 있음!"+array_substring[num]+"/"+savedWord);
+            array_check[num] = 1; //오타 있음 = 1
+        }
+
+        for(int i = 0 ; i < num ; i++ ){
+            if(array_check[i] == 0) {
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")),i,i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            else if(array_check[i] == 1) {
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#CC4444")),i,i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
+        tv_main_sentence.setText(spannableString);
+        //함수 순서 확인
+    }
+
 
     private void sentence_view(int n){
         tv_main_sentence.setText(text[n]);
@@ -229,5 +314,48 @@ public class LongPracticeActivity extends AppCompatActivity {
         sen_num = 0;
         txt_cnt = 0;
         time = 0;
+    }
+
+    private void nextSentence(){
+        sen_num += 1;
+        if(sen_num < text.length) {
+            sentence_view(sen_num);
+            et_sentence.setText("");
+            et_sentence.setFilters(new InputFilter[] { new InputFilter.LengthFilter(text[sen_num].length())}); //글자 최대 수 제한
+            sentence_separation(sen_num);
+
+            btn_enter.setEnabled(false);
+            nextS = 0;
+            tv_process_cnt.setText(sen_num+"/"+text.length);
+        } else {
+            Log.d("nextSentence","게임 종료");
+        }
+
+    }
+
+    private void time_set(){ //1초마다 업데이트
+        tv_time_cnt.setText(String.format("%02d",time/60)+":"+String.format("%02d",time%60));
+        tv_txt_cnt.setText(String.format("%d",(int)((double)txt_cnt/time*60))+"타");
+    }
+
+    private void active_set(boolean bool) { //활성화 비활성화
+        if(bool) {
+            et_sentence.setEnabled(true);
+            btn_enter.setEnabled(true);
+        } else {
+            et_sentence.setEnabled(false);
+            btn_enter.setEnabled(false);
+        }
+
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(System.currentTimeMillis()-BACK_PRESS_TIME >= 2000) {
+            BACK_PRESS_TIME = System.currentTimeMillis();
+            Toast.makeText(getApplicationContext(),"뒤로 버튼을 한 번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show();
+        } else if(System.currentTimeMillis()-BACK_PRESS_TIME < 2000) {
+            finish();
+        }
     }
 }

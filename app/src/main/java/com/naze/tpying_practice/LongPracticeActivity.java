@@ -1,4 +1,4 @@
- package com.naze.tpying_practice;
+  package com.naze.tpying_practice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -83,8 +83,9 @@ public class LongPracticeActivity extends AppCompatActivity {
         btn_enter = (Button)findViewById(R.id.btn_enter);
 
         btn_start = (Button)findViewById(R.id.btn_start);
-        btn_setting = (Button)findViewById(R.id.btn_setting);
         et_sentence = (EditText)findViewById(R.id.et_sentence);
+
+        clear(); //시작시 초기화 함수
 
         timerHandler = new TimerHandler();
 
@@ -145,7 +146,9 @@ public class LongPracticeActivity extends AppCompatActivity {
                     if (nextS == 0) {
                         nextS = 1;
                     } else if (nextS == 1) {
-                        savedByte = s.toString().substring(start - 1, start).getBytes().length;
+                        if(s.toString().length() > 0) {
+                            savedByte = s.toString().substring(start - 1, start).getBytes().length;
+                        }
                     }
                     //문제 발생 글자마다 byte 달라서 여러번 줄일 때 오류 발생
 
@@ -176,7 +179,13 @@ public class LongPracticeActivity extends AppCompatActivity {
         btn_enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nextSentence();
+                if(text[sen_num].length() <= et_sentence.getText().toString().length() ) {
+                    nextSentence();
+                }
+                else {
+                    Toast.makeText(getApplication(),"문장을 전부 입력해주세요",Toast.LENGTH_SHORT);
+                }
+
             }
         });
 
@@ -292,7 +301,7 @@ public class LongPracticeActivity extends AppCompatActivity {
             array_check[num] = 1; //오타 있음 = 1
         }
 
-        for(int i = 0 ; i < num ; i++ ){
+        for(int i = 0 ; i <= num ; i++ ){
             if(array_check[i] == 0) {
                 spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")),i,i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
@@ -303,7 +312,6 @@ public class LongPracticeActivity extends AppCompatActivity {
         tv_main_sentence.setText(spannableString);
         //함수 순서 확인
     }
-
 
     private void sentence_view(int n){
         tv_main_sentence.setText(text[n]);
@@ -324,7 +332,6 @@ public class LongPracticeActivity extends AppCompatActivity {
             et_sentence.setFilters(new InputFilter[] { new InputFilter.LengthFilter(text[sen_num].length())}); //글자 최대 수 제한
             sentence_separation(sen_num);
 
-            btn_enter.setEnabled(false);
             nextS = 0;
             tv_process_cnt.setText(sen_num+"/"+text.length);
         } else {
@@ -357,5 +364,16 @@ public class LongPracticeActivity extends AppCompatActivity {
         } else if(System.currentTimeMillis()-BACK_PRESS_TIME < 2000) {
             finish();
         }
+    }
+
+    public void clear(){ //액티비티 실행시 초기화
+        GAME_START = false;
+        sen_num = 0; //문장 번호
+        txt_cnt = 0; //타수
+        time = 0; //시간
+
+        savedWord =""; //글자
+        savedByte = 0; //바이트
+        nextS = 0;
     }
 }

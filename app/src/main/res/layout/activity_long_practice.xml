@@ -227,17 +227,6 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btn_setting"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/pause_btn_background"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="10dp">
-    </Button>
-
-    <Button
         android:id="@+id/btn_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

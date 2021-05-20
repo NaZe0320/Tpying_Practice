@@ -39,8 +39,8 @@ public class LongPracticeActivity extends AppCompatActivity {
     TimerHandler timerHandler = null;
 
     TextView tv_main_sentence, tv_sub_sentence;
-    TextView tv_txt, tv_time, tv_process, tv_error;
-    TextView tv_txt_cnt, tv_time_cnt, tv_process_cnt, tv_error_cnt;
+    TextView tv_txt, tv_time, tv_process,tv_accuracy;
+    TextView tv_txt_cnt, tv_time_cnt, tv_process_cnt, tv_accuracy_cnt;
 
     Button btn_enter;
     Button btn_start, btn_setting;
@@ -57,7 +57,15 @@ public class LongPracticeActivity extends AppCompatActivity {
 
     String savedWord =""; //글자
     int savedByte = 0; //바이트
-    int nextS = 0;
+    int nextS = 0; //문장 넘어가는 거 체크 - 문장 넘어갈때 savedByte (start-1,start) 오류 땜에 설정
+
+    int type_cnt = 0; //총 글자 개수
+    int typo_cnt = 0; //총 오타 개수
+
+    int type_sen_cnt = 0; //문장 별 글자 개수
+    int typo_sen_cnt = 0; //문장 별오타 개수
+
+    double accuracy = 0;
 
     String[] array_substring; //문장 나누기 (계산횟수 최소화하기 위해서)
     int[] array_check; //문장 오타 검사
@@ -73,25 +81,18 @@ public class LongPracticeActivity extends AppCompatActivity {
         tv_txt = (TextView)findViewById(R.id.tv_txt);
         tv_time = (TextView)findViewById(R.id.tv_time);
         tv_process = (TextView)findViewById(R.id.tv_process);
-        tv_error = (TextView)findViewById(R.id.tv_error);
+        tv_accuracy= (TextView)findViewById(R.id.tv_accuracy);
 
         tv_txt_cnt = (TextView)findViewById(R.id.tv_txt_cnt);
         tv_time_cnt = (TextView)findViewById(R.id.tv_time_cnt);
-        tv_process_cnt = (TextView)findViewById(R.id.tv_process_cnt);
-        tv_error_cnt = (TextView)findViewById(R.id.tv_error_cnt);
+        tv_process_cnt = (TextView)findViewById(R.id.tv_process_cnt);tv_accuracy_cnt = (TextView)findViewById(R.id.tv_accuracy_cnt);
 
         btn_enter = (Button)findViewById(R.id.btn_enter);
 
         btn_start = (Button)findViewById(R.id.btn_start);
         et_sentence = (EditText)findViewById(R.id.et_sentence);
 
-        clear(); //시작시 초기화 함수
-
-        timerHandler = new TimerHandler();
-
-        sentence_array(); //문장 설정하는 함수
-
-        sentence_separation(0);
+        activity_start();
 
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,14 +131,14 @@ public class LongPracticeActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("TextWatcher",s+"/"+start+"/"+before+"/"+count);
+                //Log.d("TextWatcher",s+"/"+start+"/"+before+"/"+count);
 
                 if(before <= count ) {
                     savedWord = s.toString().substring(start,start+1);
                     sentence_check(start);
                     if(before < count) {
                         savedByte = savedWord.getBytes().length;
-                        txt_cnt += savedByte; //타수에 byte 추가
+                        txt_cnt += savedByte; //타수에 byte 추a가
                     }
                 }
                 else if(before > count) {
@@ -151,10 +152,8 @@ public class LongPracticeActivity extends AppCompatActivity {
                         }
                     }
                     //문제 발생 글자마다 byte 달라서 여러번 줄일 때 오류 발생
-
                 }
-
-                Log.d("TextWatcher","타수: "+txt_cnt+"/"+savedWord);
+                //Log.d("TextWatcher","타수: "+txt_cnt+"/"+savedWord);
 
             }
 
@@ -179,11 +178,16 @@ public class LongPracticeActivity extends AppCompatActivity {
         btn_enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(text[sen_num].length() <= et_sentence.getText().toString().length() ) {
-                    nextSentence();
-                }
-                else {
-                    Toast.makeText(getApplication(),"문장을 전부 입력해주세요",Toast.LENGTH_SHORT);
+                if(text.length > sen_num) { //텍스트 모든 문장 입력했는지 확인
+                    if (text[sen_num].length() <= et_sentence.getText().toString().length()) { //한 문장 끝까지 입력했나 확인
+                        nextSentence();
+                    } else {
+                        Toast.makeText(getApplication(), "문장을 전부 입력해주세요", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    //결과창 띄우기
+                    Toast.makeText(LongPracticeActivity.this, "결과창 예정", Toast.LENGTH_SHORT).show();
+                    timerHandler.removeMessages(MESSAGE_TIMER_START);
                 }
 
             }
@@ -206,6 +210,18 @@ public class LongPracticeActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void activity_start(){
+        clear(); //시작시 변수 초기화 함수
+
+        timerHandler = new TimerHandler();
+
+        sentence_array(); //문장 설정하는 함수
+
+        sentence_separation(0);
+
+    } //액티비티 시작되었을 때
+
 
     private void sentence_array(){
         sentence_test();
@@ -238,38 +254,38 @@ public class LongPracticeActivity extends AppCompatActivity {
                 "시간이란 건 순간이란 게",
                 "아름답고도 아프구나",
                 "Yeah love then pain love then pain",
-                "Yeah let’s learn from our mistakes",
-                "우린 실패로부터 성장해",
-                "사랑은 하고 싶지만",
-                "Nobody wants to deal with the pain that follows, no",
-                "I understand them though",
-                "Yeah 이해돼 이해돼 사랑이라는 게",
-                "매일 웃게 하던 게 이제는 매일 괴롭게 해",
-                "아픈 건 없어지겠지만 상처들은 영원해",
-                "But that’s why it’s called beautiful pain",
-                "시간은 슬프게 기다리질 않네요",
-                "오늘도 결국 어제가 되겠죠",
-                "다시 시작하는 게",
-                "너무나 힘든걸요",
-                "어김없이 끝이 날까 봐",
-                "사랑을 만나 이별을 하고",
-                "수없이 많은 날을 울고 웃었다",
-                "시간이란 건 순간이란 게",
-                "아름답고도 아프구나",
-                "사랑이란 건 멈출 수 없다 아픔은 반복돼",
-                "이렇게도 아픈데 또 찾아와 사랑은 남몰래",
-                "우린 누구나가 바보가 돼",
-                "무기력하게도 한순간에",
-                "오래도록 기다렸다는 듯",
-                "아픈 사랑 앞에 물들어가",
-                "그대를 만나 사랑을 하고",
-                "그 어떤 순간보다 행복했었다",
-                "그대는 부디 아프지 말고",
-                "아름다웠길 바란다",
-                "사랑을 만나 이별을 하고",
-                "수없이 많은 날을 울고 웃었다",
-                "시간이란 건 순간이란 게",
-                "아름답고도 아프구나"
+                "Yeah let’s learn from our mistakes"
+//                "우린 실패로부터 성장해",
+//                "사랑은 하고 싶지만",
+//                "Nobody wants to deal with the pain that follows, no",
+//                "I understand them though",
+//                "Yeah 이해돼 이해돼 사랑이라는 게",
+//                "매일 웃게 하던 게 이제는 매일 괴롭게 해",
+//                "아픈 건 없어지겠지만 상처들은 영원해",
+//                "But that’s why it’s called beautiful pain",
+//                "시간은 슬프게 기다리질 않네요",
+//                "오늘도 결국 어제가 되겠죠",
+//                "다시 시작하는 게",
+//                "너무나 힘든걸요",
+//                "어김없이 끝이 날까 봐",
+//                "사랑을 만나 이별을 하고",
+//                "수없이 많은 날을 울고 웃었다",
+//                "시간이란 건 순간이란 게",
+//                "아름답고도 아프구나",
+//                "사랑이란 건 멈출 수 없다 아픔은 반복돼",
+//                "이렇게도 아픈데 또 찾아와 사랑은 남몰래",
+//                "우린 누구나가 바보가 돼",
+//                "무기력하게도 한순간에",
+//                "오래도록 기다렸다는 듯",
+//                "아픈 사랑 앞에 물들어가",
+//                "그대를 만나 사랑을 하고",
+//                "그 어떤 순간보다 행복했었다",
+//                "그대는 부디 아프지 말고",
+//                "아름다웠길 바란다",
+//                "사랑을 만나 이별을 하고",
+//                "수없이 많은 날을 울고 웃었다",
+//                "시간이란 건 순간이란 게",
+//                "아름답고도 아프구나"
         };
 
     }
@@ -292,25 +308,42 @@ public class LongPracticeActivity extends AppCompatActivity {
 
         SpannableString spannableString = new SpannableString(content);
 
+        type_sen_cnt = 0;
+        typo_sen_cnt = 0;
+
         if(array_substring[num].equals(savedWord)) {
-            Log.d("sentence_check","오타가 없음!"+array_substring[num]+"/"+savedWord);
+            //Log.d("sentence_check","오타가 없음!"+array_substring[num]+"/"+savedWord);
             array_check[num] = 0; //오타 없음 = 0
         }
         else {
-            Log.d("sentence_check","오타가 있음!"+array_substring[num]+"/"+savedWord);
+            //Log.d("sentence_check","오타가 있음!"+array_substring[num]+"/"+savedWord);
             array_check[num] = 1; //오타 있음 = 1
         }
 
-        for(int i = 0 ; i <= num ; i++ ){
+
+        for(int i = 0 ; i < num ; i++ ){
+            type_sen_cnt += 1;
             if(array_check[i] == 0) {
                 spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#000000")),i,i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             else if(array_check[i] == 1) {
                 spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#CC4444")),i,i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                typo_sen_cnt += 1;
             }
         }
         tv_main_sentence.setText(spannableString);
-        //함수 순서 확인
+        // i<=num 이면 즉시 검사
+        // i<num 이면 다음 글자 입력시 검사
+        if (num >= tv_main_sentence.getText().toString().length()-1){
+            typo_cnt += typo_sen_cnt;
+            type_cnt += type_sen_cnt;
+        }
+        Log.d("sentence_check",typo_cnt+"/"+typo_sen_cnt+"/"+type_cnt+"/"+type_sen_cnt);
+        accuracy = (double)(typo_cnt + typo_sen_cnt) / (type_cnt + type_sen_cnt);
+        Log.d("sentence_check","정확도" +accuracy);
+        tv_accuracy_cnt.setText((String.format("%.1f",(1-accuracy)*100))+"%");
+
+
     }
 
     private void sentence_view(int n){
@@ -375,5 +408,10 @@ public class LongPracticeActivity extends AppCompatActivity {
         savedWord =""; //글자
         savedByte = 0; //바이트
         nextS = 0;
+
+        type_cnt = 0; //총 글자 개수
+        typo_cnt = 0; //총 오류 개수
+
+        accuracy = 0;
     }
 }

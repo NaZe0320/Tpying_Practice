@@ -150,10 +150,10 @@
             </TextView>
 
             <TextView
-                android:id="@+id/tv_error"
+                android:id="@+id/tv_accuracy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="오타율"
+                android:text="정확도"
                 android:fontFamily="@font/maplestory_light"
                 android:textColor="@color/black"
                 android:textSize="@dimen/info_textSize"
@@ -210,7 +210,7 @@
             </TextView>
 
             <TextView
-                android:id="@+id/tv_error_cnt"
+                android:id="@+id/tv_accuracy_cnt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="100%"

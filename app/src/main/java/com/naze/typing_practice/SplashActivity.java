@@ -1,4 +1,4 @@
-package com.naze.tpying_practice;
+package com.naze.typing_practice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,7 +13,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        final Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        final Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

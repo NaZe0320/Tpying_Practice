@@ -6,6 +6,8 @@
     <dimen name="sub_sentence_textSize">18sp</dimen>
     <dimen name="btn_textSize">18sp</dimen>
     <dimen name="info_textSize">18sp</dimen>
+
+    <dimen name="result_textSize">18sp</dimen>
     
     <dimen name="margin_1">8dp</dimen>
     <dimen name="margin_2">16dp</dimen>

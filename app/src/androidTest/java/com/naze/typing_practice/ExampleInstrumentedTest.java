@@ -1,4 +1,4 @@
-package com.naze.tpying_practice;
+package com.naze.typing_practice;
 
 import android.content.Context;
 

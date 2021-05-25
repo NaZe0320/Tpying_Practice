@@ -1,14 +1,14 @@
-package com.naze.tpying_practice;
+package com.naze.typing_practice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class activity_long_result extends AppCompatActivity {
+public class StartActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_long_result);
+        setContentView(R.layout.activity_start);
     }
 }

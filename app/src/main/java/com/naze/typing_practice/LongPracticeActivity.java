@@ -1,8 +1,11 @@
-  package com.naze.tpying_practice;
+  package com.naze.typing_practice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,20 +16,17 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.KeyEvent;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.security.Key;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-public class LongPracticeActivity extends AppCompatActivity {
+  public class LongPracticeActivity extends AppCompatActivity {
 
     private static final int MESSAGE_TIMER_START = 1000;
     private static final int MESSAGE_TIMER_PAUSE = 1001;
@@ -38,6 +38,8 @@ public class LongPracticeActivity extends AppCompatActivity {
 
     TimerHandler timerHandler = null;
 
+    RelativeLayout main_view;
+
     TextView tv_main_sentence, tv_sub_sentence;
     TextView tv_txt, tv_time, tv_process,tv_accuracy;
     TextView tv_txt_cnt, tv_time_cnt, tv_process_cnt, tv_accuracy_cnt;
@@ -47,6 +49,7 @@ public class LongPracticeActivity extends AppCompatActivity {
 
     EditText et_sentence;
 
+    String title;
     String[] text;
 
     Boolean timer = false;
@@ -68,12 +71,22 @@ public class LongPracticeActivity extends AppCompatActivity {
     double accuracy = 0;
 
     String[] array_substring; //문장 나누기 (계산횟수 최소화하기 위해서)
+
     int[] array_check; //문장 오타 검사
+
+    View result_view;
+    PopupWindow result_popup;
+
+    int standardSize_X, standardSize_Y;
+    float density;
+    int width, height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_long_practice);
+
+        main_view = (RelativeLayout)findViewById(R.id.main_view);
 
         tv_main_sentence = (TextView)findViewById(R.id.tv_main_sentence);
         tv_sub_sentence = (TextView)findViewById(R.id.tv_sub_sentence);
@@ -85,14 +98,25 @@ public class LongPracticeActivity extends AppCompatActivity {
 
         tv_txt_cnt = (TextView)findViewById(R.id.tv_txt_cnt);
         tv_time_cnt = (TextView)findViewById(R.id.tv_time_cnt);
-        tv_process_cnt = (TextView)findViewById(R.id.tv_process_cnt);tv_accuracy_cnt = (TextView)findViewById(R.id.tv_accuracy_cnt);
+        tv_process_cnt = (TextView)findViewById(R.id.tv_process_cnt);
+        tv_accuracy_cnt = (TextView)findViewById(R.id.tv_accuracy_cnt);
 
         btn_enter = (Button)findViewById(R.id.btn_enter);
 
         btn_start = (Button)findViewById(R.id.btn_start);
         et_sentence = (EditText)findViewById(R.id.et_sentence);
 
+        getStandardSize();
+        getDisplaySize();
+
         activity_start();
+
+        result_view = View.inflate(LongPracticeActivity.this,R.layout.activity_long_result,null);
+        //popup_1 = new PopupWindow(popup_view_1, standardSize_X * (80/100), standardSize_Y * (60/100), true);
+        result_popup = new PopupWindow(result_view, (int)(width * 0.8), (int)(height * 0.5), true);
+        Log.d("오류",standardSize_X+"/"+standardSize_Y);
+        result_popup.setOutsideTouchable(true); // 다른 부분에 이벤트 주기
+        result_popup.setBackgroundDrawable(new BitmapDrawable()); //이벤트 들어오는 부분
 
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -252,9 +276,9 @@ public class LongPracticeActivity extends AppCompatActivity {
                 "사랑을 만나 이별을 하고",
                 "수없이 많은 날을 울고 웃었다",
                 "시간이란 건 순간이란 게",
-                "아름답고도 아프구나",
-                "Yeah love then pain love then pain",
-                "Yeah let’s learn from our mistakes"
+                "아름답고도 아프구나"
+//                "Yeah love then pain love then pain",
+//                "Yeah let’s learn from our mistakes",
 //                "우린 실패로부터 성장해",
 //                "사랑은 하고 싶지만",
 //                "Nobody wants to deal with the pain that follows, no",
@@ -369,6 +393,7 @@ public class LongPracticeActivity extends AppCompatActivity {
             tv_process_cnt.setText(sen_num+"/"+text.length);
         } else {
             Log.d("nextSentence","게임 종료");
+            finish_practice();
         }
 
     }
@@ -413,5 +438,58 @@ public class LongPracticeActivity extends AppCompatActivity {
         typo_cnt = 0; //총 오류 개수
 
         accuracy = 0;
+    }
+
+    public void finish_practice(){ //게임 종료
+
+        timerHandler.removeMessages(MESSAGE_TIMER_START);
+
+        result_popup.showAtLocation(main_view, Gravity.CENTER,0,0);
+        result_popup.setAnimationStyle(-1);
+
+        TextView tv_result_title = (TextView)findViewById(R.id.tv_result_title);
+        TextView tv_result_time = (TextView)findViewById(R.id.tv_result_time);
+        TextView tv_result_type = (TextView)findViewById(R.id.tv_result_type);
+        TextView tv_result_acc = (TextView)findViewById(R.id.tv_result_acc);
+
+        Button btn_result_close = (Button)findViewById(R.id.btn_result_close);
+
+        tv_result_title.setText(text[1]);
+        tv_result_time.setText(String.format("%02d",time/60)+":"+String.format("%02d",time%60));
+        tv_result_type.setText(String.format("%d",(int)((double)txt_cnt/time*60))+"타");
+        tv_result_acc.setText((String.format("%.1f",(1-accuracy)*100))+"%");
+
+        btn_result_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                result_popup.dismiss();
+                finish();
+            }
+        });
+
+    }
+
+    public Point getScreenSize(Activity activity){
+       Display display = activity.getWindowManager().getDefaultDisplay();
+       Point size = new Point();
+       display.getSize(size);
+       return size;
+    }
+
+    public void getStandardSize() {
+       Point ScreenSize = getScreenSize(this);
+       density = getResources().getDisplayMetrics().density;
+
+       standardSize_X = (int) (ScreenSize.x / density);
+       standardSize_Y = (int) (ScreenSize.y / density);
+    }
+
+    public void getDisplaySize() {
+       Display display = getWindowManager().getDefaultDisplay();
+       Point size = new Point();
+
+       display.getSize(size);
+       width = size.x;
+       height = size.y;
     }
 }

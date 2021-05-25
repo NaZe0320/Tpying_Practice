@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "875666346657",
+    "project_id": "typing-practice-edb7e",
+    "storage_bucket": "typing-practice-edb7e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875666346657:android:a5516f3c1c5f6d124056e0",
+        "android_client_info": {
+          "package_name": "com.naze.typing_practice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "875666346657-danuluvkmdqhiv4ejo91t8pl4s399hr9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABlP4OXdOpRMZvEuvqJ9-L1heV9r0oCak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "875666346657-danuluvkmdqhiv4ejo91t8pl4s399hr9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

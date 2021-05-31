@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/border_layout">
+
+    <Spinner
+        android:id="@+id/title_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="8dp"
+        android:entries="@array/title">
+
+    </Spinner>
+
+    <Spinner
+        android:id="@+id/time_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/title_spinner"
+        android:layout_centerInParent="true"
+        android:layout_margin="8dp"
+        android:entries="@array/time">
+
+    </Spinner>
+
+    <Button
+        android:id="@+id/btn_enter_LP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_below="@id/title_spinner"
+        android:layout_centerHorizontal="true"
+        android:text="확인"
+        android:fontFamily="@font/maplestory_bold"
+        android:textSize="24sp"/>
+</RelativeLayout>

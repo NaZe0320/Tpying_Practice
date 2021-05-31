@@ -1,35 +1,32 @@
   package com.naze.typing_practice;
 
-import androidx.appcompat.app.AppCompatActivity;
+  import android.app.Activity;
+  import android.graphics.Color;
+  import android.graphics.Point;
+  import android.graphics.drawable.BitmapDrawable;
+  import android.os.Bundle;
+  import android.os.Handler;
+  import android.os.Message;
+  import android.text.Editable;
+  import android.text.InputFilter;
+  import android.text.Spannable;
+  import android.text.SpannableString;
+  import android.text.TextWatcher;
+  import android.text.style.ForegroundColorSpan;
+  import android.util.Log;
+  import android.view.Display;
+  import android.view.Gravity;
+  import android.view.View;
+  import android.widget.Button;
+  import android.widget.EditText;
+  import android.widget.PopupWindow;
+  import android.widget.RelativeLayout;
+  import android.widget.TextView;
+  import android.widget.Toast;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
-import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+  import androidx.appcompat.app.AppCompatActivity;
 
-  public class LongPracticeActivity extends AppCompatActivity {
+  public class ShortPracticeActivity extends AppCompatActivity {
 
     private static final int MESSAGE_TIMER_START = 1000;
     private static final int MESSAGE_TIMER_PAUSE = 1001;
@@ -84,8 +81,6 @@ import android.widget.Toast;
     float density;
     int width, height;
 
-    Intent intent = getIntent();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,9 +111,9 @@ import android.widget.Toast;
 
         activity_start();
 
-        result_view = View.inflate(LongPracticeActivity.this,R.layout.activity_long_result,null);
+        result_view = View.inflate(ShortPracticeActivity.this,R.layout.activity_long_result,null);
         //popup_1 = new PopupWindow(popup_view_1, standardSize_X * (80/100), standardSize_Y * (60/100), true);
-        result_popup = new PopupWindow(result_view, (int)(width * 0.8), (int)(height * 0.3), true);
+        result_popup = new PopupWindow(result_view, (int)(width * 0.8), (int)(height * 0.5), true);
         Log.d("오류",standardSize_X+"/"+standardSize_Y);
         result_popup.setOutsideTouchable(true); // 다른 부분에 이벤트 주기
         result_popup.setBackgroundDrawable(new BitmapDrawable()); //이벤트 들어오는 부분
@@ -216,7 +211,7 @@ import android.widget.Toast;
                     }
                 } else {
                     //결과창 띄우기
-                    Toast.makeText(LongPracticeActivity.this, "결과창 예정", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ShortPracticeActivity.this, "결과창 예정", Toast.LENGTH_SHORT).show();
                     timerHandler.removeMessages(MESSAGE_TIMER_START);
                 }
 
@@ -263,71 +258,60 @@ import android.widget.Toast;
     } //문장 설정
 
     private void sentence_test (){ //테스트용
-        switch (title) {
-            case "아름답고도 아프구나":
-                text = new String[]{"사랑을 만나 이별을 하고",
-                        "수없이 많은 날을 울고 웃었다",
-                        "시간이란 건 순간이란 게",
-                        "아름답고도 아프구나",
-                        "낭만 잃은 시인 거의 시체 같아",
-                        "바라고 있어 막연한 보답",
-                        "아픔을 피해 또 다른 아픔을 만나",
-                        "옆에 있던 행복을 못 찾았을까",
-                        "너를 보내고 얼마나",
-                        "나 많이 후회했는지 몰라",
-                        "지금 이 순간에도 많은 걸",
-                        "놓치고 있는데 말이야",
-                        "시간은 또 흘러 여기까지 왔네요",
-                        "지금도 결국 추억으로 남겠죠",
-                        "다시 시작하는 게 이젠 두려운걸요",
-                        "이별을 만나 아플까 봐",
-                        "사랑을 만나 이별을 하고",
-                        "수없이 많은 날을 울고 웃었다",
-                        "시간이란 건 순간이란 게",
-                        "아름답고도 아프구나",
-                        "Yeah love then pain love then pain",
-                        "Yeah let’s learn from our mistakes",
-                        "우린 실패로부터 성장해",
-                        "사랑은 하고 싶지만",
-                        "Nobody wants to deal with the pain that follows, no",
-                        "I understand them though",
-                        "Yeah 이해돼 이해돼 사랑이라는 게",
-                        "매일 웃게 하던 게 이제는 매일 괴롭게 해",
-                        "아픈 건 없어지겠지만 상처들은 영원해",
-                        "But that’s why it’s called beautiful pain",
-                        "시간은 슬프게 기다리질 않네요",
-                        "오늘도 결국 어제가 되겠죠",
-                        "다시 시작하는 게",
-                        "너무나 힘든걸요",
-                        "어김없이 끝이 날까 봐",
-                        "사랑을 만나 이별을 하고",
-                        "수없이 많은 날을 울고 웃었다",
-                        "시간이란 건 순간이란 게",
-                        "아름답고도 아프구나",
-                        "사랑이란 건 멈출 수 없다 아픔은 반복돼",
-                        "이렇게도 아픈데 또 찾아와 사랑은 남몰래",
-                        "우린 누구나가 바보가 돼",
-                        "무기력하게도 한순간에",
-                        "오래도록 기다렸다는 듯",
-                        "아픈 사랑 앞에 물들어가",
-                        "그대를 만나 사랑을 하고",
-                        "그 어떤 순간보다 행복했었다",
-                        "그대는 부디 아프지 말고",
-                        "아름다웠길 바란다",
-                        "사랑을 만나 이별을 하고",
-                        "수없이 많은 날을 울고 웃었다",
-                        "시간이란 건 순간이란 게",
-                        "아름답고도 아프구나"
-                };
-                    break;
-            case "발표용 테스트" :
-                text = new String[]{"테스트용 문장 1",
-                        "테스트용 문장 2",
-                        "테스트용 문장 3"
-                };
-
-        }
-
+        text = new String[]{"사랑을 만나 이별을 하고",
+                "수없이 많은 날을 울고 웃었다",
+                "시간이란 건 순간이란 게",
+                "아름답고도 아프구나",
+                "낭만 잃은 시인 거의 시체 같아",
+                "바라고 있어 막연한 보답",
+                "아픔을 피해 또 다른 아픔을 만나",
+                "옆에 있던 행복을 못 찾았을까",
+                "너를 보내고 얼마나",
+                "나 많이 후회했는지 몰라",
+                "지금 이 순간에도 많은 걸",
+                "놓치고 있는데 말이야",
+                "시간은 또 흘러 여기까지 왔네요",
+                "지금도 결국 추억으로 남겠죠",
+                "다시 시작하는 게 이젠 두려운걸요",
+                "이별을 만나 아플까 봐",
+                "사랑을 만나 이별을 하고",
+                "수없이 많은 날을 울고 웃었다",
+                "시간이란 건 순간이란 게",
+                "아름답고도 아프구나",
+                "Yeah love then pain love then pain",
+                "Yeah let’s learn from our mistakes",
+                "우린 실패로부터 성장해",
+                "사랑은 하고 싶지만",
+                "Nobody wants to deal with the pain that follows, no",
+                "I understand them though",
+                "Yeah 이해돼 이해돼 사랑이라는 게",
+                "매일 웃게 하던 게 이제는 매일 괴롭게 해",
+                "아픈 건 없어지겠지만 상처들은 영원해",
+                "But that’s why it’s called beautiful pain",
+                "시간은 슬프게 기다리질 않네요",
+                "오늘도 결국 어제가 되겠죠",
+                "다시 시작하는 게",
+                "너무나 힘든걸요",
+                "어김없이 끝이 날까 봐",
+                "사랑을 만나 이별을 하고",
+                "수없이 많은 날을 울고 웃었다",
+                "시간이란 건 순간이란 게",
+                "아름답고도 아프구나",
+                "사랑이란 건 멈출 수 없다 아픔은 반복돼",
+                "이렇게도 아픈데 또 찾아와 사랑은 남몰래",
+                "우린 누구나가 바보가 돼",
+                "무기력하게도 한순간에",
+                "오래도록 기다렸다는 듯",
+                "아픈 사랑 앞에 물들어가",
+                "그대를 만나 사랑을 하고",
+                "그 어떤 순간보다 행복했었다",
+                "그대는 부디 아프지 말고",
+                "아름다웠길 바란다",
+                "사랑을 만나 이별을 하고",
+                "수없이 많은 날을 울고 웃었다",
+                "시간이란 건 순간이란 게",
+                "아름답고도 아프구나"
+        };
 
     }
 
@@ -448,8 +432,6 @@ import android.widget.Toast;
         txt_cnt = 0; //타수
         time = 0; //시간
 
-        title = getIntent().getStringExtra("title");
-        Log.d("clear",title);
         savedWord =""; //글자
         savedByte = 0; //바이트
         nextS = 0;

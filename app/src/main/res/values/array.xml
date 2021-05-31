@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="title">
+        <item>아름답고도 아프구나</item>
+        <item>발표용 테스트</item>
+    </string-array>
+
+    <string-array name="time">
+        <item>3분</item>
+        <item>5분</item>
+        <item>8분</item>
+    </string-array>
+</resources>

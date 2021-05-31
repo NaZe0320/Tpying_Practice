@@ -8,10 +8,50 @@
 
     <Button
         android:id="@+id/btn_menu_1"
-        android:layout_width="wrap_content"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/btn_menu_2"
+        android:text="짧은 글 연습"
+        android:fontFamily="@font/maplestory_bold"
+        android:textSize="@dimen/menu_textSize"
+        android:textColor="#FFFFFF">
+
+    </Button>
+
+    <Button
+        android:id="@+id/btn_menu_2"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/btn_menu_3"
+        android:text="긴 글 연습"
+        android:fontFamily="@font/maplestory_bold"
+        android:textSize="@dimen/menu_textSize"
+        android:textColor="#FFFFFF">
+
+    </Button>
+
+    <Button
+        android:id="@+id/btn_menu_3"
+        android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="긴 글 연습"
+        android:text="타자 검정"
+        android:fontFamily="@font/maplestory_bold"
+        android:textSize="@dimen/menu_textSize"
+        android:textColor="#FFFFFF">
+
+    </Button>
+
+
+    <Button
+        android:id="@+id/btn_menu_4"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_menu_3"
+        android:layout_centerHorizontal="true"
+        android:text="기록실"
         android:fontFamily="@font/maplestory_bold"
         android:textSize="@dimen/menu_textSize"
         android:textColor="#FFFFFF">

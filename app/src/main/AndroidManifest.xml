@@ -9,19 +9,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Tpying_Practice">
-        <activity android:name="com.naze.typing_practice.StartActivity"></activity>
-        <activity android:name="com.naze.typing_practice.RegisterActivity" />
-        <activity android:name="com.naze.typing_practice.LoginActivity" />
-        <activity android:name="com.naze.typing_practice.activity_long_result" />
-        <activity android:name="com.naze.typing_practice.LongPracticeActivity" />
-        <activity android:name="com.naze.typing_practice.SplashActivity">
+        <activity android:name=".RecordActivity"></activity>
+        <activity android:name=".StartActivity" />
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".LongPracticeResultActivity" />
+        <activity android:name=".LongPracticeActivity" />
+        <activity android:name=".ShortPracticeActivity" />
+        <activity android:name=".LongTestActivity" />
+        <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.naze.typing_practice.MainActivity" />
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>

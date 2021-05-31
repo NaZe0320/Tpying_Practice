@@ -1,35 +1,33 @@
   package com.naze.typing_practice;
 
-import androidx.appcompat.app.AppCompatActivity;
+  import android.app.Activity;
+  import android.database.sqlite.SQLiteDatabase;
+  import android.graphics.Color;
+  import android.graphics.Point;
+  import android.graphics.drawable.BitmapDrawable;
+  import android.os.Bundle;
+  import android.os.Handler;
+  import android.os.Message;
+  import android.text.Editable;
+  import android.text.InputFilter;
+  import android.text.Spannable;
+  import android.text.SpannableString;
+  import android.text.TextWatcher;
+  import android.text.style.ForegroundColorSpan;
+  import android.util.Log;
+  import android.view.Display;
+  import android.view.Gravity;
+  import android.view.View;
+  import android.widget.Button;
+  import android.widget.EditText;
+  import android.widget.PopupWindow;
+  import android.widget.RelativeLayout;
+  import android.widget.TextView;
+  import android.widget.Toast;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
-import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+  import androidx.appcompat.app.AppCompatActivity;
 
-  public class LongPracticeActivity extends AppCompatActivity {
+  public class LongTestActivity extends AppCompatActivity {
 
     private static final int MESSAGE_TIMER_START = 1000;
     private static final int MESSAGE_TIMER_PAUSE = 1001;
@@ -84,8 +82,6 @@ import android.widget.Toast;
     float density;
     int width, height;
 
-    Intent intent = getIntent();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +112,7 @@ import android.widget.Toast;
 
         activity_start();
 
-        result_view = View.inflate(LongPracticeActivity.this,R.layout.activity_long_result,null);
+        result_view = View.inflate(LongTestActivity.this,R.layout.activity_long_result,null);
         //popup_1 = new PopupWindow(popup_view_1, standardSize_X * (80/100), standardSize_Y * (60/100), true);
         result_popup = new PopupWindow(result_view, (int)(width * 0.8), (int)(height * 0.3), true);
         Log.d("오류",standardSize_X+"/"+standardSize_Y);
@@ -216,7 +212,7 @@ import android.widget.Toast;
                     }
                 } else {
                     //결과창 띄우기
-                    Toast.makeText(LongPracticeActivity.this, "결과창 예정", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LongTestActivity.this, "결과창 예정", Toast.LENGTH_SHORT).show();
                     timerHandler.removeMessages(MESSAGE_TIMER_START);
                 }
 
@@ -231,9 +227,13 @@ import android.widget.Toast;
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_TIMER_START:
-                    time += 1; //1초 추가
-                    //Log.d("TimerHandler","Timer Start : " + time);
-                    this.sendEmptyMessageDelayed(MESSAGE_TIMER_START, 1000);
+                    time -= 1; //1초 추가
+                    if(time > 0) {
+                        //Log.d("TimerHandler","Timer Start : " + time);
+                        this.sendEmptyMessageDelayed(MESSAGE_TIMER_START, 1000);
+                    } else {
+                        finish_practice();
+                    }
                     time_set();
                     //Log.d("TimerHandler","타수  : "+txt_cnt+" / 시간 : "+time);
                     break;
@@ -319,7 +319,7 @@ import android.widget.Toast;
                         "시간이란 건 순간이란 게",
                         "아름답고도 아프구나"
                 };
-                    break;
+                break;
             case "발표용 테스트" :
                 text = new String[]{"테스트용 문장 1",
                         "테스트용 문장 2",
@@ -390,7 +390,7 @@ import android.widget.Toast;
     private void game_reset(){
         sen_num = 0;
         txt_cnt = 0;
-        time = 0;
+
     }
 
     private void nextSentence(){
@@ -446,10 +446,10 @@ import android.widget.Toast;
         GAME_START = false;
         sen_num = 0; //문장 번호
         txt_cnt = 0; //타수
-        time = 0; //시간
+        time = getIntent().getIntExtra("time",0); //시간
 
         title = getIntent().getStringExtra("title");
-        Log.d("clear",title);
+
         savedWord =""; //글자
         savedByte = 0; //바이트
         nextS = 0;
@@ -458,6 +458,8 @@ import android.widget.Toast;
         typo_cnt = 0; //총 오류 개수
 
         accuracy = 0;
+
+
     }
 
     public void finish_practice(){ //게임 종료
@@ -481,7 +483,7 @@ import android.widget.Toast;
         tv_result_type.setText(String.format("%d",(int)((double)txt_cnt/time*60))+"타");
         tv_result_acc.setText((String.format("%.1f",(1-accuracy)*100))+"%");
 
-        //insertResult(title, (int)((double)txt_cnt/time*60), (int)(1-accuracy)*100);
+        insertResult(title, (int)((double)txt_cnt/time*60), (int)(1-accuracy)*100);
 
         btn_result_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -517,16 +519,16 @@ import android.widget.Toast;
        height = size.y;
     }
 
-//    void insertResult(String title, int txt, int acc){
-//        DBHelper helper = new DBHelper(this);
-//        SQLiteDatabase database = helper.getReadableDatabase();
-//
-//        String qry ;
-//
-//        qry = "INSERT INTO RESULT_TEST VALUES(null, '"+ title+ "', '" + txt + "', '" + acc + "')";
-//
-//        database.execSQL(qry);
-//    }
+    void insertResult(String title, int txt, int acc){
+        DBHelper helper = new DBHelper(this);
+        SQLiteDatabase database = helper.getReadableDatabase();
+
+        String qry ;
+
+        qry = "INSERT INTO RESULT_TEST VALUES(null, '"+ title+ "', '" + txt + "', '" + acc + "')";
+
+        database.execSQL(qry);
+    }
 
 
 }
